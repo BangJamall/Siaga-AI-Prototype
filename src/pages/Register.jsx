@@ -2,6 +2,7 @@ import { useState } from "react"
 import { createUserWithEmailAndPassword } from "firebase/auth"  // ← fungsi yang berbeda!
 import { auth } from "../firebase/config"
 import { useNavigate } from "react-router-dom"
+import { KeyRound, Mail, UserRoundKey } from "lucide-react";
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -23,21 +24,36 @@ export default function Register() {
         }
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            navigate("/dashboard");
+            navigate("/");
         } catch (error) {
             setError(error.message);
         }
     };
     return (
         <div>
-            <h1>Register</h1>
-            <form onSubmit={handleRegister}>
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <div className="flex flex-col justify-center items-center min-h-screen">
+            <h1 className="text-2xl font-bold mb-4">Register</h1>
+            <div className="bg-gray-500 p-4 rounded-lg">
+            <form onSubmit={handleRegister} className="flex flex-col gap-4 py-5 px-10">
+
+                <div className="flex items-center gap-2">
+                <Mail size={15} />
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+
+                <div className="flex items-center gap-2">
+                <KeyRound size={15} />
                 <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                </div>
+
+                <div className="flex items-center gap-2">
+                <UserRoundKey size={15} />
                 <input type="password" placeholder="Konfirmasi Password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-                <button type="submit">Register</button>
+                </div>
+                <button type="submit" className="bg-blue-500 text-white p-2 rounded-lg mt-5">Register</button>
             </form>
             {error && <p>{error}</p>}
+            </div>
+            </div>
         </div>
     );
 }
