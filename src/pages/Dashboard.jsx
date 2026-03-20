@@ -64,7 +64,7 @@ export default function Dashboard() {
             <nav className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <ShieldAlert size={22} className="text-blue-600" />
-                    <span className="font-bold text-blue-600">Siaga AI</span>
+                    <span className="font-bold text-blue-600">SIGAP</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <span className="text-sm text-slate-500 hidden sm:block">{user?.email}</span>
@@ -87,7 +87,7 @@ export default function Dashboard() {
                         <div className="inline-flex items-center justify-center p-3 bg-blue-600 rounded-2xl mb-4 text-white shadow-lg shadow-blue-200">
                             <ShieldAlert size={32} />
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight">Siaga AI</h1>
+                        <h1 className="text-3xl font-bold tracking-tight">SIGAP</h1>
                         <p className="text-slate-500 mt-2">Deteksi penipuan terpadu: Nomor, Pesan, dan Link dalam satu langkah.</p>
                     </header>
 
