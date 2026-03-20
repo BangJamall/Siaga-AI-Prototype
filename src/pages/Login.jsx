@@ -37,6 +37,7 @@ export default function Login() {
                     </form>
                     
                     <p>Belum punya akun? <Link to="/register" className="text-blue-500 bg-white rounded-lg px-2 py-1">Register</Link></p>
+                    <p className="text-sm mt-2">atau login menggunakan <span className="font-bold">digdaya@gmail.com</span>, pw: <span className="font-bold">12345678</span></p>
                     {error && <p className="text-red-800">{error}</p>}
                 </div>
             </div>
