@@ -3,11 +3,9 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
     Search,
-    ShieldAlert,
     Globe,
     Phone,
     MessageSquare,
-    AlertTriangle,
     Loader2,
     LogOut,
 } from 'lucide-react';
@@ -20,7 +18,7 @@ export default function Dashboard() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [result, setResult] = useState(null);
     const [backendData, setBackendData] = useState(null);
-
+    const MAX_MESSAGE_LENGTH = 2000;
     const handleLogout = async () => {
         await logout();
         navigate("/");
@@ -32,6 +30,9 @@ export default function Dashboard() {
         setResult(null);
         setBackendData(null);
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 detik
+
         try {
             const response = await fetch('/api/analyze', {
                 method: "POST",
@@ -39,25 +40,38 @@ export default function Dashboard() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ message: input }),
+                signal: controller.signal,
             });
 
+            clearTimeout(timeoutId);
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || "Gagal melakukan analisis");
+                let errorMessage = "Gagal melakukan analisis";
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.detail || errorMessage;
+                } catch {
+                    errorMessage = `Server error (${response.status}). Coba lagi nanti.`;
+                }
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();
-            console.log("Analysis success:", data);
             setResult(data);
             setBackendData(data);
         } catch (error) {
-            console.error("Analysis error:", error);
+            clearTimeout(timeoutId);
+            const isTimeout = error.name === 'AbortError';
+            const message = isTimeout
+                ? "Analisis memakan waktu terlalu lama. Coba lagi."
+                : (error.message || "Tidak dapat terhubung ke server.");
+
             setResult({
                 final_status: "ERROR",
                 skor_detail: { skor_final: 0 },
-                error: error.message || "Tidak dapat terhubung ke backend."
+                error: message,
             });
-            setBackendData({ error: error.message || "Tidak dapat terhubung ke backend" });
+            setBackendData({ error: message });
         } finally {
             setIsAnalyzing(false);
         }
@@ -69,8 +83,7 @@ export default function Dashboard() {
             {/* Navbar */}
             <nav className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <ShieldAlert size={20} className="text-blue-600" />
-                    <span className="font-bold text-blue-600">SIGAP</span>
+                    <img src="/Sigap-06.svg" alt="Logo" className="h-13 p-2 rounded-lg" />
                 </div>
                 <div className="flex items-center gap-4">
                     <span className="text-sm text-slate-500 hidden sm:block">{user?.email}</span>
@@ -90,10 +103,10 @@ export default function Dashboard() {
 
                     {/* Header */}
                     <header className="text-center mb-8">
-                        <div className="inline-flex flex-col items-center justify-center p-3  bg-blue-600 shadow-lg shadow-blue-200 rounded-xl">
-                            <ShieldAlert size={22} className="text-white"/>
+                        <div className="inline-flex flex-col items-center justify-center p-2 shadow-lg shadow-blue-200 rounded-xl">
+                            <img src="/logoku.svg" alt="Logo" className="h-8 object-contain" />
                         </div>
-                        <div className="mb-4"> <h1 className="font-bold text-blue-500">SIGAP</h1></div>
+                        <div><h1 className="font-bold text-sm mb-2" style={{ color: '#0071BC' }}>SIGAP</h1></div>
                         <p className="text-slate-500 text-sm">Deteksi penipuan terpadu: Nomor, Pesan, dan Link dalam satu langkah.</p>
                     </header>
 
@@ -106,11 +119,15 @@ export default function Dashboard() {
                             className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none"
                             placeholder="Contoh: Selamat! Anda menang undian 50jt dari Bank ABC. Klik link ini: http://bit.ly/undian-palsu atau hubungi 08123456789"
                             value={input}
+                            maxLength={MAX_MESSAGE_LENGTH}
                             onChange={(e) => setInput(e.target.value)}
                         />
+                        <p className="text-xs text-slate-400 mt-1 text-right">
+                            {input.length}/{MAX_MESSAGE_LENGTH}
+                        </p>
                         <button
                             onClick={analyzeContent}
-                            disabled={isAnalyzing || !input}
+                            disabled={isAnalyzing || !input.trim() || input.length > MAX_MESSAGE_LENGTH}
                             className={`w-full mt-4 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${isAnalyzing || !input
                                 ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
                                 : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-100'
