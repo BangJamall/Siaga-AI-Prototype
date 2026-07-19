@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import {
     Search,
     Globe,
@@ -11,18 +9,13 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard() {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
 
     const [input, setInput] = useState('');
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [result, setResult] = useState(null);
     const [backendData, setBackendData] = useState(null);
     const MAX_MESSAGE_LENGTH = 2000;
-    const handleLogout = async () => {
-        await logout();
-        navigate("/");
-    };
+
 
     const analyzeContent = async () => {
         if (!input.trim()) return;
@@ -86,16 +79,19 @@ export default function Dashboard() {
                     <img src="/Sigap-06.svg" alt="Logo" className="h-13 p-2 rounded-lg" />
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="text-sm text-slate-500 hidden sm:block">{user?.email}</span>
                     <button
-                        onClick={handleLogout}
+                        onClick={() => window.location.assign('/')}
                         className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg transition cursor-pointer"
+                        type="button"
+                        aria-label="Logout"
                     >
                         <LogOut size={15} />
                         Logout
                     </button>
                 </div>
             </nav>
+
+
 
             {/* Main Content */}
             <div className="p-4 md:p-8">
@@ -192,10 +188,9 @@ export default function Dashboard() {
                                                 <div>
                                                     <h3 className="font-semibold text-sm uppercase text-slate-400 tracking-tight">Analisis Konten Teks</h3>
                                                     <div className="mt-1">
-                                                        <span className={`text-sm font-semibold ${
-                                                            result.text_analysis?.risk === 'BAHAYA' ? 'text-red-600' :
+                                                        <span className={`text-sm font-semibold ${result.text_analysis?.risk === 'BAHAYA' ? 'text-red-600' :
                                                             result.text_analysis?.risk === 'WASPADA' ? 'text-amber-600' : 'text-green-600'
-                                                        }`}>
+                                                            }`}>
                                                             {result.text_analysis?.risk || 'AMAN'}
                                                         </span>
                                                         <p className="text-slate-600 text-sm mt-0.5">
@@ -225,10 +220,9 @@ export default function Dashboard() {
                                                                 <div key={i} className="flex flex-col bg-white p-3 rounded-lg border border-slate-200 text-sm">
                                                                     <div className="flex items-center justify-between">
                                                                         <span className="font-mono font-semibold">{phone.original}</span>
-                                                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                                                            phone.risk_level === 'BAHAYA' ? 'bg-red-500 text-white' :
+                                                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${phone.risk_level === 'BAHAYA' ? 'bg-red-500 text-white' :
                                                                             phone.risk_level === 'WASPADA' ? 'bg-amber-500 text-white' : 'bg-green-500 text-white'
-                                                                        }`}>
+                                                                            }`}>
                                                                             {phone.risk_level}
                                                                         </span>
                                                                     </div>
@@ -266,10 +260,9 @@ export default function Dashboard() {
                                                                     <div key={i} className="flex flex-col bg-white p-3 rounded-lg border border-slate-200 text-sm">
                                                                         <div className="flex items-center justify-between">
                                                                             <span className="truncate text-blue-600 max-w-[200px] font-mono">{url}</span>
-                                                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                                                                detection?.status === 'BAHAYA' ? 'bg-red-500 text-white' :
+                                                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${detection?.status === 'BAHAYA' ? 'bg-red-500 text-white' :
                                                                                 detection?.status === 'WASPADA' ? 'bg-amber-500 text-white' : 'bg-green-500 text-white'
-                                                                            }`}>
+                                                                                }`}>
                                                                                 {detection?.status || 'AMAN'}
                                                                             </span>
                                                                         </div>
