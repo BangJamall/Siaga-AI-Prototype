@@ -7,6 +7,7 @@ import {
     Loader2,
     LogOut,
 } from 'lucide-react';
+import WalkthroughModal from '../components/walktroughModal';
 
 export default function Dashboard() {
 
@@ -14,6 +15,7 @@ export default function Dashboard() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [result, setResult] = useState(null);
     const [backendData, setBackendData] = useState(null);
+    const [showWalkthrough, setShowWalkthrough] = useState(false);
     const MAX_MESSAGE_LENGTH = 2000;
 
 
@@ -77,6 +79,13 @@ export default function Dashboard() {
             <nav className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <img src="/Sigap-06.svg" alt="Logo" className="h-13 p-2 rounded-lg" />
+                    <button
+                        onClick={() => setShowWalkthrough(true)}
+                        className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-600 border border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg transition cursor-pointer font-medium"
+                        type="button"
+                    >
+                        Panduan
+                    </button>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
@@ -289,7 +298,10 @@ export default function Dashboard() {
                             </div>
                         </div>
                     )}
-
+                    <WalkthroughModal
+                        isOpenExternal={showWalkthrough}
+                        onCloseExternal={() => setShowWalkthrough(false)}
+                    />
                     {/* {backendData && (
                         <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mt-6">
                             <h2 className="text-lg font-bold mb-3">Respons Backend</h2>
